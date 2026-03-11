@@ -8,7 +8,7 @@ A demo MCP server showcasing interactive UI capabilities using the [MCP Apps Ext
 - 📱 **Apps Extension** - HTML UI via `ui://` resources with `text/html;profile=mcp-app`
 - 📦 **structuredContent** - Data passed to UI via `ui/notifications/tool-input`
 - 💬 **Bidirectional** - UIs can send messages back to chat via `ui/message`
-- 🚀 **stdio Transport**
+- 🚀 **stdio & HTTP Transport** — `--http` flag for HTTP transport
 
 ## Tools
 
@@ -48,12 +48,17 @@ dotnet build
 
 # Run with stdio transport (for Claude Desktop, Cursor, VS Code)
 dotnet run
+
+# Run with HTTP transport
+dotnet run -- --http
 ```
 
 ## Project Structure
 
 ```
-Program.cs              # Main server — tool + resource registration, handlers
+Program.cs              # Server entry point — DI setup, transport selection
+PlaygroundTools.cs      # Tool definitions with [McpServerTool] attributes
+PlaygroundResources.cs  # Resource definitions with [McpServerResource] attributes
 McpAppsPlayground.csproj # Project file
 ui/
 ├── greeting.html       # Greeting UI template
@@ -98,34 +103,42 @@ Update `.vscode/mcp.json`:
 
 ### 1. UI Resource Declaration
 
-UI resources are declared with `ui://` scheme and `text/html;profile=mcp-app` MIME type. HTML templates are loaded from files in the `ui/` directory:
+UI resources are declared as methods on a class annotated with `[McpServerResourceType]`. Each method uses `[McpServerResource]` with a `ui://` URI template and `text/html;profile=mcp-app` MIME type:
 
 ```csharp
-var uiResources = new Dictionary<string, (string Name, string Description, string HtmlFile)>
+[McpServerResourceType]
+public sealed class PlaygroundResources
 {
-    ["ui://mcp-apps-playground/greeting"] = ("greeting-ui", "Interactive greeting UI panel", "greeting.html"),
-};
+    [McpServerResource(
+        UriTemplate = "ui://mcp-apps-playground/greeting",
+        Name = "greeting-ui",
+        MimeType = "text/html;profile=mcp-app")]
+    [Description("Interactive greeting UI panel")]
+    public static string GetGreetingUi()
+        => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "ui", "greeting.html"));
+}
 ```
 
 ### 2. Tool with UI Annotation
 
-Tools use `Meta.ui.resourceUri` to link to a UI resource. Data is passed via `structuredContent`:
+Tools are defined as methods with `[McpServerTool]` attributes. Data is passed to the UI via `StructuredContent`. The `_meta.ui` annotation linking each tool to its UI resource is injected via `AddListToolsFilter`:
 
 ```csharp
-new Tool
+[McpServerToolType]
+public sealed class PlaygroundTools
 {
-    Name = "hello_world",
-    Description = "Display a Hello World greeting with optional interactive UI",
-    InputSchema = JsonSerializer.SerializeToElement(new { ... }),
-    Meta = new JsonObject
+    [McpServerTool(Name = "hello_world")]
+    [Description("Display a Hello World greeting")]
+    public static CallToolResult HelloWorld(
+        [Description("Name to greet")] string name)
     {
-        ["ui"] = JsonNode.Parse(JsonSerializer.Serialize(new
+        return new CallToolResult
         {
-            resourceUri = "ui://mcp-apps-playground/greeting",
-            visibility = new[] { "model", "app" }
-        }))
+            Content = [new TextContentBlock { Text = $"Hello, {name}!" }],
+            StructuredContent = JsonSerializer.SerializeToElement(new { name })
+        };
     }
-};
+}
 ```
 
 ### 3. UI Communication
