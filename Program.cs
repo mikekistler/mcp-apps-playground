@@ -1,6 +1,9 @@
 ﻿using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
+using ModelContextProtocol.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -258,13 +261,29 @@ var options = new McpServerOptions
     }
 };
 
-var transport = new StdioServerTransport("mcp-apps-playground");
-await using var server = McpServer.Create(transport, options);
-
-Log("MCP Apps Playground server running (stdio)");
-Log("Apps Extension: UI resources available at ui://mcp-apps-playground/");
-
-await server.RunAsync();
+if (args.Contains("--http"))
+{
+    var builder = WebApplication.CreateBuilder(args);
+    builder.Services.AddMcpServer(opts =>
+    {
+        opts.ServerInfo = options.ServerInfo;
+        opts.Capabilities = options.Capabilities;
+        opts.Handlers = options.Handlers;
+    }).WithHttpTransport();
+    var app = builder.Build();
+    app.MapMcp();
+    Log("MCP Apps Playground server running (HTTP)");
+    Log("Apps Extension: UI resources available at ui://mcp-apps-playground/");
+    app.Run();
+}
+else
+{
+    var transport = new StdioServerTransport("mcp-apps-playground");
+    await using var server = McpServer.Create(transport, options);
+    Log("MCP Apps Playground server running (stdio)");
+    Log("Apps Extension: UI resources available at ui://mcp-apps-playground/");
+    await server.RunAsync();
+}
 
 // --- Tool handlers ---
 
