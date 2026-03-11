@@ -2,15 +2,8 @@
   "servers": {
     "mcp-apps-playground": {
       "type": "stdio",
-      "command": "node",
-      "args": ["${workspaceFolder}/dist/index.js"],
-      "dev": {
-        "watch": "${workspaceFolder}/dist/index.js",
-        "debug": {
-          "type": "node"
-        }
-      }
+      "command": "dotnet",
+      "args": ["run", "--project", "${workspaceFolder}"]
     }
-  },
-  "inputs": []
+  }
 }
