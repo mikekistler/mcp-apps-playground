@@ -5,7 +5,6 @@ Example MCP server with interactive HTML UIs. For MCP Apps development guidance,
 ## Project Structure
 
 ```
-src/
-  index.ts       # MCP server - tool + resource registration
-  ui/*.ts        # HTML template functions (return full HTML strings)
+Program.cs              # MCP server — tool + resource registration, handlers
+ui/*.html               # HTML UI templates (loaded at runtime)
 ```
