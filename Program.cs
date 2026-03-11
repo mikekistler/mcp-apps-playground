@@ -1,5 +1,4 @@
-﻿using McpAppsPlayground.Ui;
-using ModelContextProtocol;
+﻿using ModelContextProtocol;
 using ModelContextProtocol.Protocol;
 using ModelContextProtocol.Server;
 using System.Text.Json;
@@ -15,13 +14,14 @@ void Log(string message)
 }
 
 // UI resource definitions
-var uiResources = new Dictionary<string, (string Name, string Description, Func<string> GetHtml)>
+var uiDir = Path.Combine(AppContext.BaseDirectory, "ui");
+var uiResources = new Dictionary<string, (string Name, string Description, string HtmlFile)>
 {
-    ["ui://mcp-apps-playground/greeting"] = ("greeting-ui", "Interactive greeting UI panel", HelloWorldUi.GetHtml),
-    ["ui://mcp-apps-playground/list-sort"] = ("list-sort-ui", "Interactive list sorting UI panel", ListSortUi.GetHtml),
-    ["ui://mcp-apps-playground/flame-graph"] = ("flame-graph-ui", "Interactive flame graph profiler visualization", FlameGraphUi.GetHtml),
-    ["ui://mcp-apps-playground/feature-flags"] = ("feature-flags-ui", "Feature flag selector with multi-select and environment support", FeatureFlagsUi.GetHtml),
-    ["ui://mcp-apps-playground/database-query"] = ("database-query-ui", "Interactive sales database query UI with filters and preview", DatabaseQueryUi.GetHtml),
+    ["ui://mcp-apps-playground/greeting"] = ("greeting-ui", "Interactive greeting UI panel", "greeting.html"),
+    ["ui://mcp-apps-playground/list-sort"] = ("list-sort-ui", "Interactive list sorting UI panel", "list-sort.html"),
+    ["ui://mcp-apps-playground/flame-graph"] = ("flame-graph-ui", "Interactive flame graph profiler visualization", "flame-graph.html"),
+    ["ui://mcp-apps-playground/feature-flags"] = ("feature-flags-ui", "Feature flag selector with multi-select and environment support", "feature-flags.html"),
+    ["ui://mcp-apps-playground/database-query"] = ("database-query-ui", "Interactive sales database query UI with filters and preview", "database-query.html"),
 };
 
 // Tool definitions
@@ -172,7 +172,7 @@ var options = new McpServerOptions
         {
             var resources = new List<Resource>();
 
-            foreach (var (uri, (resName, description, _)) in uiResources)
+            foreach (var (uri, (resName, description, htmlFile)) in uiResources)
             {
                 resources.Add(new Resource
                 {
@@ -202,7 +202,7 @@ var options = new McpServerOptions
 
             if (uri != null && uiResources.TryGetValue(uri, out var uiResource))
             {
-                var html = uiResource.GetHtml();
+                var html = File.ReadAllText(Path.Combine(uiDir, uiResource.HtmlFile));
                 Log($"Returning HTML template ({html.Length} bytes)");
                 return ValueTask.FromResult(new ReadResourceResult
                 {
