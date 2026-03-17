@@ -1,9 +1,8 @@
 {
   "servers": {
     "mcp-apps-playground": {
-      "type": "stdio",
-      "command": "dotnet",
-      "args": ["run", "--project", "${workspaceFolder}"]
+      "type": "http",
+      "url": "http://localhost:5000"
     }
   }
 }

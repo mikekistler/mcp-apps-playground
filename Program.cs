@@ -4,6 +4,8 @@ using ModelContextProtocol.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -15,11 +17,13 @@ var toolUiMap = new Dictionary<string, string>
     ["flame_graph"] = "ui://mcp-apps-playground/flame-graph",
     ["feature_flags"] = "ui://mcp-apps-playground/feature-flags",
     ["database_query"] = "ui://mcp-apps-playground/database-query",
+    ["weather_forecast"] = "ui://mcp-apps-playground/weather-forecast",
 };
 
 if (args.Contains("--http"))
 {
     var builder = WebApplication.CreateBuilder(args);
+    RegisterHttpClient(builder.Services);
     ConfigureMcp(builder.Services.AddMcpServer(ConfigureOptions).WithHttpTransport());
     var app = builder.Build();
     app.MapMcp();
@@ -28,6 +32,11 @@ if (args.Contains("--http"))
 else
 {
     var builder = Host.CreateApplicationBuilder(args);
+    builder.Logging.AddConsole(options =>
+    {
+        options.LogToStandardErrorThreshold = LogLevel.Trace;
+    });
+    RegisterHttpClient(builder.Services);
     ConfigureMcp(builder.Services.AddMcpServer(ConfigureOptions).WithStdioServerTransport());
     await builder.Build().RunAsync();
 }
@@ -67,4 +76,11 @@ void ConfigureMcp(IMcpServerBuilder mcpBuilder)
                 return result;
             });
         });
+}
+
+void RegisterHttpClient(IServiceCollection services)
+{
+    var httpClient = new HttpClient { BaseAddress = new Uri("https://api.weather.gov") };
+    httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("mcp-apps-playground", "1.0"));
+    services.AddSingleton(httpClient);
 }
