@@ -20,7 +20,7 @@ Content-Type: application/json
 
 ###
 
-@SessionId = -SlCf4zWG2Fl1KcAYiR-yQ
+@SessionId = W2Yac74zzEqW7zCvR7VC9g
 
 POST {{HostAddress}}/
 Accept: application/json, text/event-stream
@@ -36,8 +36,6 @@ Mcp-Session-Id: {{SessionId}}
 
 ###
 
-@resource_uri = test://direct/text/resource
-
 POST {{HostAddress}}/
 Accept: application/json, text/event-stream
 Content-Type: application/json
@@ -47,31 +45,11 @@ Mcp-Session-Id: {{SessionId}}
 {
     "jsonrpc": "2.0",
     "id": 3,
-    "method": "resources/subscribe",
+    "method": "tools/call",
     "params": {
-        "uri": "{{resource_uri}}"
+        "name": "weather_forecast",
+        "arguments": {
+            "cityState": "Austin, TX"
+        }
     }
 }
-
-###
-
-POST {{HostAddress}}/
-Accept: application/json, text/event-stream
-Content-Type: application/json
-MCP-Protocol-Version: 2025-11-25
-Mcp-Session-Id: {{SessionId}}
-
-{
-    "jsonrpc": "2.0",
-    "id": 4,
-    "method": "resources/unsubscribe",
-    "params": {
-        "uri": "{{resource_uri}}"
-    }
-}
-
-###
-
-DELETE {{HostAddress}}/
-MCP-Protocol-Version: 2025-11-25
-Mcp-Session-Id: {{SessionId}}
