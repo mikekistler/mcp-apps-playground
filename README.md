@@ -4,7 +4,7 @@ A demo MCP server showcasing interactive UI capabilities using the [MCP Apps Ext
 
 ## Features
 
-- 🔧 **MCP Tools** - `hello_world`, `list_sort`, `flame_graph`, `feature_flags`, and `database_query` tools
+- 🔧 **MCP Tools** - `hello_world`, `list_sort`, `flame_graph`, `feature_flags`, `database_query`, and `weather_forecast` tools
 - 📱 **Apps Extension** - HTML UI via `ui://` resources with `text/html;profile=mcp-app`
 - 📦 **structuredContent** - Data passed to UI via `ui/notifications/tool-input`
 - 💬 **Bidirectional** - UIs can send messages back to chat via `ui/message`
@@ -40,6 +40,16 @@ A demo MCP server showcasing interactive UI capabilities using the [MCP Apps Ext
 
 > 🌍 Environment tabs · 🔎 Search & filter · ☑️ Multi-select · 📝 Generate SDK code
 
+---
+
+### `weather_forecast` — Weather Forecast Viewer
+
+**Before:** Agent receives weather data from an API tool → formats a text summary of temperatures, wind, and conditions → user reads through a wall of text to find the periods they care about.
+
+**With MCP Apps:** Agent renders a card-based forecast display with temperature coloring and weather icons. User selects any of the 100 largest US cities from a dropdown to fetch a new forecast directly — no need to ask the agent for each city.
+
+> 🏙️ City picker (100 US cities) · 🌡️ Temperature-colored cards · 🌤️ Weather icons · 💨 Wind details
+
 ## Quick Start
 
 ```bash
@@ -59,13 +69,16 @@ dotnet run -- --http
 Program.cs              # Server entry point — DI setup, transport selection
 PlaygroundTools.cs      # Tool definitions with [McpServerTool] attributes
 PlaygroundResources.cs  # Resource definitions with [McpServerResource] attributes
+UsCity.cs               # US city enum with lat/long coordinates
+HttpClientExt.cs        # HttpClient JSON extension method
 McpAppsPlayground.csproj # Project file
 ui/
 ├── greeting.html       # Greeting UI template
 ├── list-sort.html      # Interactive list sorting UI
 ├── flame-graph.html    # Performance flame graph visualization
 ├── feature-flags.html  # Feature flag selector UI
-└── database-query.html # Sales database query UI
+├── database-query.html # Sales database query UI
+└── weather-forecast.html # Weather forecast viewer UI
 ```
 
 ## MCP Configuration
@@ -78,13 +91,14 @@ Update `.vscode/mcp.json`:
 {
   "servers": {
     "mcp-apps-playground": {
-      "type": "stdio",
-      "command": "dotnet",
-      "args": ["run", "--project", "${workspaceFolder}"]
+      "type": "http",
+      "url": "http://localhost:5000"
     }
   }
 }
 ```
+
+Then start the server with `dotnet run -- --http`.
 
 ### Claude Desktop / Cursor
 
