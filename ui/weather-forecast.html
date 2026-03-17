@@ -227,6 +227,10 @@
 
         // Fallback: read city list from a dedicated resource
         if (!enumValues) {
+          sendNotification('notifications/message', {
+            level: 'warning',
+            data: 'hostContext.toolInfo.tool.inputSchema is missing from ui/initialize response — falling back to resources/read for city list'
+          });
           try {
             const res = await sendRequest('resources/read', { uri: 'data://mcp-apps-playground/us-cities' });
             const text = res?.contents?.[0]?.text;
