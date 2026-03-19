@@ -17,7 +17,7 @@ var toolUiMap = new Dictionary<string, string>
     ["flame_graph"] = "ui://mcp-apps-playground/flame-graph",
     ["feature_flags"] = "ui://mcp-apps-playground/feature-flags",
     ["database_query"] = "ui://mcp-apps-playground/database-query",
-    ["weather_forecast"] = "ui://mcp-apps-playground/weather-forecast",
+    ["weather_ui"] = "ui://mcp-apps-playground/weather-forecast",
 };
 
 if (args.Contains("--stdio"))

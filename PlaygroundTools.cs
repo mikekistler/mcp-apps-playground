@@ -192,6 +192,14 @@ public sealed class PlaygroundTools
         };
     }
 
+    [McpServerTool(Name = "weather_ui")]
+    [Description("Display an interactive weather forecast UI with city picker.")]
+    public static string WeatherUi()
+    {
+        var text = "Showing weather forecast UI.";
+        return text;
+    }
+
     [McpServerTool(Name = "weather_forecast")]
     [Description("Get weather forecast for a US city. Returns detailed multi-period forecast from the National Weather Service.")]
     public static async Task<CallToolResult> WeatherForecast(
@@ -221,7 +229,7 @@ public sealed class PlaygroundTools
 
         return new CallToolResult
         {
-            Content = [new TextContentBlock { Text = $"Weather forecast for {cityState} displayed in UI." }],
+            Content = [new TextContentBlock { Text = $"Weather forecast for {cityState}." }],
             StructuredContent = JsonSerializer.SerializeToElement(new
             {
                 cityState = cityState.ToString(),

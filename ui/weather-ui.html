@@ -125,7 +125,7 @@
         citySelect.value = args.cityState;
         document.getElementById('fetchBtn').disabled = false;
         document.getElementById('locationInfo').textContent = args.cityState;
-        setStatus('Waiting for forecast result...');
+        fetchForecast();
       }
     }
 
@@ -137,6 +137,8 @@
         }
         renderForecast(sc.periods);
         setStatus(`Forecast loaded — ${sc.periods.length} periods`, 'success');
+      } else if (sc && sc.cityState) {
+        document.getElementById('locationInfo').textContent = sc.cityState;
       }
     }
 

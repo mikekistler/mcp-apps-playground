@@ -78,7 +78,7 @@ ui/
 ├── flame-graph.html    # Performance flame graph visualization
 ├── feature-flags.html  # Feature flag selector UI
 ├── database-query.html # Sales database query UI
-└── weather-forecast.html # Weather forecast viewer UI
+└── weather-ui.html       # Weather forecast viewer UI
 ```
 
 ## MCP Configuration
