@@ -8,7 +8,7 @@ A demo MCP server showcasing interactive UI capabilities using the [MCP Apps Ext
 - 📱 **Apps Extension** - HTML UI via `ui://` resources with `text/html;profile=mcp-app`
 - 📦 **structuredContent** - Data passed to UI via `ui/notifications/tool-input`
 - 💬 **Bidirectional** - UIs can send messages back to chat via `ui/message`
-- 🚀 **stdio & HTTP Transport** — `--http` flag for HTTP transport
+- 🚀 **stdio & HTTP Transport** — HTTP by default, `--stdio` flag for stdio transport
 
 ## Tools
 
@@ -56,11 +56,11 @@ A demo MCP server showcasing interactive UI capabilities using the [MCP Apps Ext
 # Build
 dotnet build
 
-# Run with stdio transport (for Claude Desktop, Cursor, VS Code)
+# Run with HTTP transport (default)
 dotnet run
 
-# Run with HTTP transport
-dotnet run -- --http
+# Run with stdio transport (for Claude Desktop, Cursor)
+dotnet run -- --stdio
 ```
 
 ## Project Structure
@@ -98,7 +98,7 @@ Update `.vscode/mcp.json`:
 }
 ```
 
-Then start the server with `dotnet run -- --http`.
+Then start the server with `dotnet run`.
 
 ### Claude Desktop / Cursor
 
@@ -107,7 +107,7 @@ Then start the server with `dotnet run -- --http`.
   "mcpServers": {
     "mcp-apps-playground": {
       "command": "dotnet",
-      "args": ["run", "--project", "/path/to/mcp-apps-playground"]
+      "args": ["run", "--project", "/path/to/mcp-apps-playground", "--", "--stdio"]
     }
   }
 }

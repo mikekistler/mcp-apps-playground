@@ -20,16 +20,7 @@ var toolUiMap = new Dictionary<string, string>
     ["weather_forecast"] = "ui://mcp-apps-playground/weather-forecast",
 };
 
-if (args.Contains("--http"))
-{
-    var builder = WebApplication.CreateBuilder(args);
-    RegisterHttpClient(builder.Services);
-    ConfigureMcp(builder.Services.AddMcpServer(ConfigureOptions).WithHttpTransport());
-    var app = builder.Build();
-    app.MapMcp();
-    app.Run();
-}
-else
+if (args.Contains("--stdio"))
 {
     var builder = Host.CreateApplicationBuilder(args);
     builder.Logging.AddConsole(options =>
@@ -39,6 +30,15 @@ else
     RegisterHttpClient(builder.Services);
     ConfigureMcp(builder.Services.AddMcpServer(ConfigureOptions).WithStdioServerTransport());
     await builder.Build().RunAsync();
+}
+else
+{
+    var builder = WebApplication.CreateBuilder(args);
+    RegisterHttpClient(builder.Services);
+    ConfigureMcp(builder.Services.AddMcpServer(ConfigureOptions).WithHttpTransport());
+    var app = builder.Build();
+    app.MapMcp();
+    app.Run();
 }
 
 void ConfigureOptions(McpServerOptions options)
